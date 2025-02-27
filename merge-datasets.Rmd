@@ -1,0 +1,126 @@
+---
+title: "Dataset Merge"
+author: "Francisco Handrick"
+date: '2024-20-03'
+output: html_document
+description: This script create our final dataset file for analysis - sample_final_ds_before_VT_check.csv
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(fig.width=5, fig.height=5, fig.path='./figures/', dev=c('png', 'pdf'))
+
+setwd(".")
+
+library(sqldf)
+library(xtable)
+```
+
+## Merge Script
+
+
+The purpose of this R script is to merge several datasets into a single one. 
+The following datasets are merged:
+
+   * *appsHash* contains the hash of all apps, including information to indicate 
+   if a given asset is an original or a repackaged version of an app. 
+   
+   * *avclass* contains the results of using the tool av2class to identify 
+   the family of the malware in our dataset. 
+   
+   * *sampleAppHash.csv* contains the hash of the original apps used in our study. 
+   
+   * *originalSampleFamily* contains the malware family of the original apps used in our study. 
+   
+   * *repackageSampleFamily.csv* contains the malware family of the repackage apps used in our study. 
+   
+   * *summary.csv* contains the outputs of the mining android sandbox approach.
+   
+   * *summarySimiDroid.csv* contains the outputs of Simidroid with similarity of all app pairs.
+   
+We merge the above datasets and export the results to a file named *sample_final_ds_before_VT_check.csv*.   
+
+```{r vt}
+
+#Load the Datasets
+apps <- read.csv("appsHash.csv", head=T, sep=',')
+
+repackaged <- sqldf("select repackaged from apps ")
+
+colnames(repackaged)
+colnames(apps)
+
+
+avclass <- read.csv("avClassResultRepackaged.csv", head=T, sep=',')
+nrow(avclass)
+
+result <- read.csv("../methods_explored/output/diffs/summary.csv")
+result <- sqldf("select * from result")
+
+
+apphash <- read.csv("sampleAppHash.csv", head=T, sep=',')
+apphash <- sqldf("select * from apphash")
+nrow(apphash)
+
+firstPart <- sqldf("select h.dataset as source, h.hash as sha256original, h2.hash as sha256,
+              case
+	               when (r.methods_in_diff = '0') THEN 'False'
+	                  Else 'True' 
+	             END as apidetected
+
+               from result r 
+               inner join apphash h on h.app = r.apk
+               inner join apphash h2 on h2.app = r.apk
+               
+               where h.type = 'benign' and h2.type = 'malicious'")
+
+
+simiResults <- read.csv("summarySimiDroid.csv", head=T)
+simiResults <- sqldf("select * from simiResults")
+
+secondPart <- sqldf("select f.source, f.sha256original, f.sha256,f.apidetected,s.identical, s.similar, s.new, s.deleted, s.similarity from firstPart f 
+               inner join simiResults s on s.sha256original = f.sha256original and s.sha256 = f.sha256")
+
+originalFamily <- read.csv("originalSampleFamily.csv", head=T, sep=',')
+originalFamily <- sqldf("select * from originalFamily ")
+
+malwareFamily <- read.csv("repackageSampleFamily.csv", head=T, sep=',')
+malwareFamily <- sqldf("select * from malwareFamily")
+
+vendorCkeck <- read.csv("vendorCkeck.csv", head=T, sep=',')
+vendorCkeck <- sqldf("select * from vendorCkeck")
+
+thirdPart <- sqldf("select se.source, se.sha256original, o.benign ,se.sha256, r.family, 
+                    case
+	                     when ((r.family = 'None' and v.qtdvendor = '0') 
+	                                  or (r.family = 'None' and v.qtdvendor = '1'))THEN 'False'
+	                  Else 'True'
+                     END as malware,v.qtdvendor as qtdvendor,
+               se.apidetected,se.identical, se.similar, se.new, se.deleted, se.similarity from secondPart se 
+               left join originalFamily o on o.hash = se.sha256original
+               left join malwareFamily r on r.sha256repackage = se.sha256
+               inner join vendorCkeck v on v.hash = se.sha256")
+
+param_trace_diff <- read.csv("param_trace_diff.csv", head=T, sep=',')
+param_trace_diff <- sqldf("select * from param_trace_diff ")
+
+lastPart <- sqldf("select t.source as source, t.sha256original as sha256original, t.benign as benign, t.sha256 as sha256, 
+                t.family as family, t.malware as malware,t.qtdvendor, t.apidetected as apidetected,tp.param_methods_in_diff as paramdetected, tp.trace_in_diff as tracedetected,                  t.identical as identical, t.similar as similar, t.new as new, t.deleted as deleted, t.similarity as similarity from thirdPart t 
+                inner join param_trace_diff tp on tp.original = t.sha256original
+                and tp.repackaged = t.sha256")
+
+
+write.csv(lastPart, "sample_final_ds_before_VT_check.csv", quote = F, row.names = F)
+
+large_ds = sqldf("select * from lastPart where benign = 'True'")
+
+write.csv(large_ds, "large_ds.csv", quote = F, row.names = F)
+
+```
+
+```{r vt}
+
+
+
+
+
