@@ -1,7 +1,7 @@
 ---
 title: "Dataset Merge"
-author: "Francisco Handrick"
-date: '2024-20-03'
+author: "Anonymous"
+date: '2025-20-02'
 output: html_document
 description: This script create our final dataset file for analysis - sample_final_ds_before_VT_check.csv
 ---
@@ -54,7 +54,7 @@ colnames(apps)
 avclass <- read.csv("avClassResultRepackaged.csv", head=T, sep=',')
 nrow(avclass)
 
-result <- read.csv("../methods_explored/output/diffs/summary.csv")
+result <- read.csv("methods_explored/output/diffs/summary.csv")
 result <- sqldf("select * from result")
 
 
