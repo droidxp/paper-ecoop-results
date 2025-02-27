@@ -1,0 +1,55 @@
+---
+title: "DroidXPAssessment"
+author: "Rodrigo Bonifácio et al."
+date: "4/18/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(sqldf)
+setwd(".")
+```
+
+## R Markdown
+
+
+```{r load}
+diffs <- read.csv("../output/diffs/summary.csv", sep=",", header = T)
+methods <- read.csv("../output/diffs/methods_in_diff.csv", sep=",", header=T)
+
+summary(diffs$methods_in_diff)
+boxplot(diffs$methods_in_diff)
+
+nrow(diffs)
+colnames(diffs)
+
+df0 <- sqldf("select tool, count(*) as Total from diffs group by tool")
+df1 <- sqldf("select tool, count(*) as Hits from diffs where methods_in_diff > 0 group by tool")
+
+final_ds <- sqldf("select d0.tool, Total, Hits 
+                   from df0 d0, df1 d1
+                   where d0.tool = d1.tool ")
+
+final_ds
+
+
+head(sqldf("select method, occurrences from methods order by 2 desc"))
+```
+
+### False positive assessment
+
+```{r}
+fp <- read.csv("../output/fp.csv", head=T, sep=',')
+
+colnames(fp)
+
+fp_by_apk = sqldf("select apk, execution, count(*) as Total
+                   from fp
+                   where Diff > 0
+                   group by apk, execution ")
+
+summary(fp_by_apk$Total)
+
+fp_by_apk
+```
