@@ -1,7 +1,7 @@
 ---
 title: "A replication study of the Mining Android Sandboxes research for malware detection"
-author: "Rodrigo Bonifácio et al."
-date: '2023-01-23'
+author: "Anonymous"
+date: '2025-20-02'
 output:
   html_document: default
   pdf_document: default
