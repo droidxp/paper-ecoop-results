@@ -1,7 +1,7 @@
 ## Replication Package
 
 
-This is the replication package for the paper: The Achilles' Heel of the Android Mining Sandbox Approach.
+This is the replication package for the paper: Mining Android Sandox for Malware Detection : Replication and Extension Study
 
 ### Abstract
 
