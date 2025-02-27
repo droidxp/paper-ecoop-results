@@ -9,7 +9,7 @@ import csv
 
 count = 0
 
-with open('tseSamples.csv') as csvfile:
+with open('Samples.csv') as csvfile:
     readCSV = csv.reader(csvfile, delimiter=',')
     for row in readCSV:
         if row[0] != "original":
