@@ -234,11 +234,13 @@ sd(full_ds$similarity)
 sds <- sqldf("select similarity, 'Small Dataset' as dataset from small_ds") 
 cds <- sqldf("select similarity, 'Complete Dataset' as dataset from full_ds") 
 
-ds <- rbind(sds, cds)
+#ds <- rbind(sds, cds)
+ds <- rbind(cds)
 
-ds$dataset <- factor(ds$dataset , levels=c("Small Dataset", "Complete Dataset"))
+#ds$dataset <- factor(ds$dataset , levels=c("Small Dataset", "Complete Dataset"))
+ds$dataset <- factor(ds$dataset , levels=c("Complete Dataset"))
 
-boxplot(similarity~dataset, data = ds, xlab="Datasets", ylab="Similarity Score", col = c("gray"), outline=F)
+boxplot(similarity~dataset, data = ds, xlab="Complete Dataset", ylab="Similarity Score", col = c("gray"), outline=F)
 ```
 
 
