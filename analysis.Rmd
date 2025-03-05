@@ -221,7 +221,7 @@ xtable(sqldf("select cluster, averageSimilarity, total, hits, percentAGE
 ```
 
 
-# Comparing the similarity scores (LargeDS and SmallDS)
+# Similarity scores (LargeDS)
 
 ```{r similarityComparison}
 summary(small_ds$similarity)
