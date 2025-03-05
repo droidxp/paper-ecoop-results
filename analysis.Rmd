@@ -240,85 +240,8 @@ ds <- rbind(cds)
 #ds$dataset <- factor(ds$dataset , levels=c("Small Dataset", "Complete Dataset"))
 ds$dataset <- factor(ds$dataset , levels=c("Complete Dataset"))
 
-boxplot(similarity~dataset, data = ds, xlab="Complete Dataset", ylab="Similarity Score", col = c("gray"), outline=F)
+boxplot(similarity~dataset, data = ds, xlab="LargeDS", ylab="Similarity Score", col = c("gray"), outline=F)
 ```
-
-
-# Extensions' Assessments
-
-### Accuracy Assesment (LargeDS with Parameter Extension)
-
-```{r accuracyLargeDS-parameter}
-
-tp <- sqldf("select * from full_ds where malware = 'True' and (apidetected = 'True' or paramdetected = 'True')" )
-
-fp <- sqldf("select * from full_ds where malware = 'False' and (apidetected = 'True' or paramdetected = 'True')" )
-
-fn <- sqldf("select * from full_ds where malware = 'True' and (apidetected = 'False' and paramdetected = 'False')" )
-
-precision = nrow(tp) / (nrow(tp) + nrow(fp))
-
-recall = nrow(tp) / (nrow(tp) + nrow(fn))
-
-fscore = 2 * (precision*recall) / (precision + recall)
-
-precision
-recall
-fscore
-nrow(tp)
-nrow(fp)
-nrow(fn)
-```
-
-### Accuracy Assesment (LargeDS with Trace Extension)
-
-```{r accuracyLargeDS-trace}
-
-tp <- sqldf("select * from full_ds where malware = 'True' and (apidetected = 'True' or tracedetected = 'True')" )
-
-fp <- sqldf("select * from full_ds where malware = 'False' and (apidetected = 'True' or tracedetected = 'True')" )
-
-fn <- sqldf("select * from full_ds where malware = 'True' and (apidetected = 'False' and tracedetected = 'False')" )
-
-precision = nrow(tp) / (nrow(tp) + nrow(fp))
-
-recall = nrow(tp) / (nrow(tp) + nrow(fn))
-
-fscore = 2 * (precision*recall) / (precision + recall)
-
-precision
-recall
-fscore
-nrow(tp)
-nrow(fp)
-nrow(fn)
-```
-
-### Accuracy Assesment (LargeDS with Trace and Parameter Extensions)
-
-```{r accuracyLargeDS-parameter-trace}
-
-tp <- sqldf("select * from full_ds where malware = 'True' and (apidetected = 'True' or tracedetected = 'True' or paramdetected = 'True')" )
-
-fp <- sqldf("select * from full_ds where malware = 'False' and (apidetected = 'True' or tracedetected = 'True' or paramdetected = 'True')" )
-
-fn <- sqldf("select * from full_ds where malware = 'True' and (apidetected = 'False' and tracedetected = 'False' and paramdetected = 'False')" )
-
-precision = nrow(tp) / (nrow(tp) + nrow(fp))
-
-recall = nrow(tp) / (nrow(tp) + nrow(fn))
-
-fscore = 2 * (precision*recall) / (precision + recall)
-
-precision
-recall
-fscore
-nrow(tp)
-nrow(fp)
-nrow(fn)
-```
-
-
 
 
 

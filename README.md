@@ -1,7 +1,7 @@
 ## Replication Package
 
 
-Mining Android Sandox for Malware Detection: A Replication Study Using a Larger Dataset
+Scaling Up: Revisiting Mining Android Sandboxes at Scale for Malware Classification
 
 ### Abstract
 
