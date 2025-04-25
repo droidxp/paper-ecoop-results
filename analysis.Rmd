@@ -1,7 +1,7 @@
 ---
-title: "A replication study of the Mining Android Sandboxes research for malware detection"
-author: "Anonymous"
-date: '2025-20-02'
+title: "Scaling Up: Revisiting Mining Android Sandboxes at Scale for Malware Classification"
+author: "Francisco Handrick"
+date: '2025-20-04'
 output:
   html_document: default
   pdf_document: default
